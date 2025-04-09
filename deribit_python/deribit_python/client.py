@@ -3,10 +3,11 @@ Deribit API Client
 
 This module provides the main client class for interacting with the Deribit API.
 """
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, Any, List
 import requests
 from .exceptions import DeribitAPIError
 from .utils import generate_signature
+from .jsonrpc import JsonRpcRequest, JsonRpcResponse
 
 class DeribitClient:
     """
@@ -74,6 +75,38 @@ class DeribitClient:
         except requests.exceptions.RequestException as e:
             raise DeribitAPIError(f"API request failed: {str(e)}")
 
+    def _jsonrpc_request(
+        self,
+        method: str,
+        params: Optional[Dict[str, Any]] = None,
+        request_id: Optional[str] = None
+    ) -> JsonRpcResponse:
+        """
+        Make a JSON-RPC request to the Deribit API.
+        
+        Args:
+            method (str): The JSON-RPC method to call
+            params (dict, optional): Parameters for the method
+            request_id (str, optional): Request ID
+            
+        Returns:
+            JsonRpcResponse: The parsed JSON-RPC response
+            
+        Raises:
+            DeribitAPIError: If the API request fails
+        """
+        jsonrpc_request = JsonRpcRequest(method, params, request_id)
+        
+        try:
+            response = self.session.post(
+                f"{self.base_url}/api/v2/public/{method}",
+                json=jsonrpc_request.to_dict()
+            )
+            response.raise_for_status()
+            return JsonRpcResponse(response.json())
+        except requests.exceptions.RequestException as e:
+            raise DeribitAPIError(f"JSON-RPC request failed: {str(e)}")
+
     def get_ticker(self, instrument_name: str) -> Dict:
         """
         Get ticker information for an instrument.
@@ -89,6 +122,31 @@ class DeribitClient:
             endpoint="/api/v2/public/get_ticker",
             params={"instrument_name": instrument_name}
         )
+
+    def get_order_book(
+        self,
+        instrument_name: str,
+        depth: int = 10
+    ) -> Dict[str, Any]:
+        """
+        Get the order book for an instrument.
+        
+        Args:
+            instrument_name (str): Instrument name (e.g., "BTC-PERPETUAL")
+            depth (int, optional): Depth of the order book (default: 10)
+            
+        Returns:
+            dict: Order book information
+        """
+        response = self._jsonrpc_request(
+            method="get_order_book",
+            params={
+                "instrument_name": instrument_name,
+                "depth": depth
+            }
+        )
+        
+        return response.result
 
     def create_order(
         self,

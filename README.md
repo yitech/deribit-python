@@ -5,6 +5,7 @@ A Python wrapper for the Deribit cryptocurrency exchange API. This library provi
 ## Features
 
 - REST API integration
+- JSON-RPC support for both HTTP and WebSocket
 - WebSocket support for real-time data
 - Support for both testnet and mainnet
 - Comprehensive error handling
@@ -33,6 +34,14 @@ client = DeribitClient(
 ticker = client.get_ticker("BTC-PERPETUAL")
 print(f"Current BTC price: {ticker['last_price']}")
 
+# Get order book for an option
+order_book = client.get_order_book(
+    instrument_name="BNB_USDC-10APR25-490-P",
+    depth=10
+)
+print(f"Best bid price: {order_book['best_bid_price']}")
+print(f"Best ask price: {order_book['best_ask_price']}")
+
 # Place a limit order
 order = client.create_order(
     instrument_name="BTC-PERPETUAL",
@@ -41,6 +50,42 @@ order = client.create_order(
     price=50000,
     type="limit"
 )
+```
+
+## JSON-RPC Support
+
+This library supports both HTTP and WebSocket JSON-RPC methods. The JSON-RPC functionality is handled automatically by the client, but you can also use the JSON-RPC classes directly if needed:
+
+```python
+from deribit import JsonRpcRequest, JsonRpcResponse
+
+# Create a JSON-RPC request
+request = JsonRpcRequest(
+    method="get_order_book",
+    params={
+        "instrument_name": "BTC-PERPETUAL",
+        "depth": 10
+    }
+)
+
+# Convert to JSON
+json_request = request.to_json()
+print(json_request)
+
+# Parse a JSON-RPC response
+response_data = {
+    "jsonrpc": "2.0",
+    "result": {
+        "timestamp": 1744208208919,
+        "state": "open",
+        "bids": [],
+        "asks": []
+    },
+    "id": "123",
+    "testnet": True
+}
+response = JsonRpcResponse(response_data)
+print(response.result)
 ```
 
 ## Documentation

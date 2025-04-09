@@ -11,6 +11,7 @@ from .exceptions import (
     DeribitRequestError,
     DeribitResponseError
 )
+from .jsonrpc import JsonRpcRequest, JsonRpcResponse
 
 __version__ = "0.1.0"
 __all__ = [
@@ -18,5 +19,7 @@ __all__ = [
     "DeribitAPIError",
     "DeribitAuthenticationError",
     "DeribitRequestError",
-    "DeribitResponseError"
+    "DeribitResponseError",
+    "JsonRpcRequest",
+    "JsonRpcResponse"
 ] 
