@@ -172,6 +172,113 @@ class OrderBook:
         """Convert timestamp to datetime object."""
         return datetime.fromtimestamp(self.timestamp / 1000)  # Convert from milliseconds to seconds
 
+@dataclass
+class TickerStats:
+    high: Optional[float] = None
+    low: Optional[float] = None
+    price_change: Optional[float] = None
+    volume: Optional[float] = None
+    volume_usd: Optional[float] = None
+    volume_notional: Optional[float] = None
+
+
+@dataclass
+class Ticker:
+    """
+    Represents the ticker for an instrument.
+
+    Attributes:
+        timestamp: Unix timestamp in milliseconds
+        best_ask_amount: Amount at best ask
+        best_ask_price: Price at best ask
+        best_bid_amount: Amount at best bid
+        best_bid_price: Price at best bid
+        current_funding: Current funding rate
+        estimated_delivery_price: Estimated delivery price
+        funding_8h: Funding rate in the last 8 hours
+        index_price: Current index price
+        instrument_name: Name of the instrument
+        interest_value: Interest value
+        last_price: Last traded price
+        mark_price: Mark price
+        max_price: Maximum price
+        min_price: Minimum price
+        open_interest: Open interest
+        settlement_price: Settlement price
+        state: State of the instrument
+    """
+    timestamp: int
+    best_ask_amount: float
+    best_ask_price: float
+    best_bid_amount: float
+    best_bid_price: float
+    current_funding: Optional[float]
+    estimated_delivery_price: float
+    funding_8h: Optional[float]
+    index_price: float
+    instrument_name: str
+    interest_value: Optional[float]
+    last_price: float
+    mark_price: float
+    max_price: float
+    min_price: float
+    open_interest: float
+    settlement_price: Optional[float]
+    state: str
+    stats: TickerStats
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'Ticker':
+        stats = TickerStats(**data.get('stats', {}))
+        return cls(
+            timestamp=data['timestamp'],
+            best_ask_amount=data['best_ask_amount'],
+            best_ask_price=data['best_ask_price'],
+            best_bid_amount=data['best_bid_amount'],
+            best_bid_price=data['best_bid_price'],
+            current_funding=data.get('current_funding'),
+            estimated_delivery_price=data['estimated_delivery_price'],
+            funding_8h=data.get('funding_8h'),
+            index_price=data['index_price'],
+            instrument_name=data['instrument_name'],
+            interest_value=data.get('interest_value'),
+            last_price=data['last_price'],
+            mark_price=data['mark_price'],
+            max_price=data['max_price'],
+            min_price=data['min_price'],
+            open_interest=data['open_interest'],
+            settlement_price=data['settlement_price'],
+            state=data['state'],
+            stats=stats
+        )
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            'timestamp': self.timestamp,
+            'best_ask_amount': self.best_ask_amount,
+            'best_ask_price': self.best_ask_price,
+            'best_bid_amount': self.best_bid_amount,
+            'best_bid_price': self.best_bid_price,
+            'current_funding': self.current_funding,
+            'estimated_delivery_price': self.estimated_delivery_price,
+            'funding_8h': self.funding_8h,
+            'index_price': self.index_price,
+            'instrument_name': self.instrument_name,
+            'interest_value': self.interest_value,
+            'last_price': self.last_price,
+            'mark_price': self.mark_price,
+            'max_price': self.max_price,
+            'min_price': self.min_price,
+            'open_interest': self.open_interest,
+            'settlement_price': self.settlement_price,
+            'state': self.state,
+            'stats': asdict(self.stats)
+        }
+
+    @property
+    def datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.timestamp / 1000)
+
 
 @dataclass
 class JsonRpcRequest:

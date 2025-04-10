@@ -5,7 +5,9 @@ This module provides the main client class for interacting with the Deribit API.
 """
 from typing import Dict, Optional, Union, Any, List
 import requests
-from .models import JsonRpcRequest, JsonRpcResponse, OrderBook
+from .models import (
+    JsonRpcRequest, JsonRpcResponse, OrderBook, Ticker
+    )
 from .exceptions import DeribitAPIException
 from .consts import DeribitMethod, TESTNET_BASE_URL, MAINNET_BASE_URL
 
@@ -83,6 +85,22 @@ class DeribitClient:
             raise DeribitAPIException(f"Request failed: {str(e)}")
         except Exception as e:
             raise DeribitAPIException(f"Unexpected error: {str(e)}")
+        
+    def get_ticker(self, instrument_name: str) -> Ticker:
+        """
+        Get the ticker for a given instrument.
+        
+        Args:
+            instrument_name: The name of the instrument
+        """
+        result = self._make_request(
+            DeribitMethod.GET_TICKER,
+            {
+                "instrument_name": instrument_name
+            }
+        )
+        print(result)
+        return Ticker.from_dict(result)
 
     def get_order_book(self, instrument_name: str, depth: int = 10) -> OrderBook:
         """
