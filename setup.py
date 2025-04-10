@@ -11,7 +11,7 @@ setup(
     description="A Python wrapper for the Deribit cryptocurrency exchange API",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/deribit-python",
+    url="https://github.com/yitech/deribit-python",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -29,7 +29,6 @@ setup(
         "requests>=2.25.0",
         "websockets>=10.0",
         "aiohttp>=3.8.0",
-        "python-dotenv>=0.19.0",
     ],
     extras_require={
         "dev": [
