@@ -11,6 +11,7 @@ A Python wrapper for the Deribit cryptocurrency exchange API. This library provi
 - Comprehensive error handling
 - Type hints for better IDE support
 - Async/await support for modern Python applications
+- Structured data models with dataclasses
 
 ## Installation
 
@@ -34,13 +35,40 @@ client = DeribitClient(
 ticker = client.get_ticker("BTC-PERPETUAL")
 print(f"Current BTC price: {ticker['last_price']}")
 
-# Get order book for an option
+# Get order book for an instrument
 order_book = client.get_order_book(
-    instrument_name="BNB_USDC-10APR25-490-P",
+    instrument_name="BTC-PERPETUAL",
     depth=10
 )
-print(f"Best bid price: {order_book['best_bid_price']}")
-print(f"Best ask price: {order_book['best_ask_price']}")
+
+# Access order book data through structured attributes
+print(f"Best bid price: {order_book.best_bid_price}")
+print(f"Best ask price: {order_book.best_ask_price}")
+print(f"Mark price: {order_book.mark_price}")
+print(f"Underlying price: {order_book.underlying_price}")
+
+# Access order book entries
+print("\nTop 3 bids:")
+for bid in order_book.bids[:3]:
+    print(f"Price: {bid.price}, Amount: {bid.amount}")
+
+print("\nTop 3 asks:")
+for ask in order_book.asks[:3]:
+    print(f"Price: {ask.price}, Amount: {ask.amount}")
+
+# Access statistics
+print(f"\n24h High: {order_book.stats.high}")
+print(f"24h Low: {order_book.stats.low}")
+print(f"24h Volume: {order_book.stats.volume}")
+
+# Access Greeks (for options)
+print(f"\nDelta: {order_book.greeks.delta}")
+print(f"Gamma: {order_book.greeks.gamma}")
+print(f"Vega: {order_book.greeks.vega}")
+print(f"Theta: {order_book.greeks.theta}")
+
+# Get timestamp as datetime
+print(f"\nOrder book timestamp: {order_book.datetime}")
 
 # Place a limit order
 order = client.create_order(
