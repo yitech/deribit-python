@@ -5,7 +5,7 @@ This module provides the main client class for interacting with the Deribit API.
 """
 from typing import Dict, Optional, Union, Any, List
 import requests
-from .models import JsonRpcRequest, JsonRpcResponse
+from .models import JsonRpcRequest, JsonRpcResponse, OrderBook
 from .exceptions import DeribitAPIException
 from .consts import DeribitMethod, TESTNET_BASE_URL, MAINNET_BASE_URL
 
@@ -84,7 +84,7 @@ class DeribitClient:
         except Exception as e:
             raise DeribitAPIException(f"Unexpected error: {str(e)}")
 
-    def get_order_book(self, instrument_name: str, depth: int = 10) -> Dict[str, Any]:
+    def get_order_book(self, instrument_name: str, depth: int = 10) -> OrderBook:
         """
         Get the order book for a given instrument.
         
@@ -93,18 +93,19 @@ class DeribitClient:
             depth: The depth of the order book (default: 10)
             
         Returns:
-            The order book data
+            OrderBook instance containing the order book data
             
         Raises:
             DeribitAPIException: If the API request fails
         """
-        return self._make_request(
+        result = self._make_request(
             DeribitMethod.GET_ORDER_BOOK,
             {
                 "instrument_name": instrument_name,
                 "depth": depth
             }
         )
+        return OrderBook.from_dict(result)
             
 
     

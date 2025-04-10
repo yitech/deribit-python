@@ -1,3 +1,5 @@
+from enum import Enum, StrEnum
+
 """
 Constants used throughout the Deribit API wrapper.
 """
@@ -7,7 +9,7 @@ TESTNET_BASE_URL = "https://test.deribit.com/api/v2"
 MAINNET_BASE_URL = "https://www.deribit.com/api/v2"
 
 
-class DeribitMethod:
+class DeribitMethod(StrEnum):
     """
     Deribit API method names.
     """

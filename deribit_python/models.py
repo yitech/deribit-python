@@ -1,7 +1,176 @@
-from dataclasses import dataclass, field
-from typing import Dict, Any, Optional
+from dataclasses import dataclass, field, asdict
+from typing import Dict, Any, Optional, List
 import uuid
 import json
+from datetime import datetime
+
+
+@dataclass
+class OrderBookStats:
+    """Statistics for the order book."""
+    high: Optional[float] = None
+    low: Optional[float] = None
+    price_change: Optional[float] = None
+    volume: float = 0.0
+    volume_usd: float = 0.0
+    volume_notional: float = 0.0
+
+
+@dataclass
+class OrderBookGreeks:
+    """Option Greeks for the instrument."""
+    delta: float = 0.0
+    gamma: float = 0.0
+    vega: float = 0.0
+    theta: float = 0.0
+    rho: float = 0.0
+
+
+@dataclass
+class OrderBookEntry:
+    """Single entry in the order book (bid or ask)."""
+    price: float
+    amount: float
+
+
+@dataclass
+class OrderBook:
+    """
+    Represents the order book for an instrument.
+    
+    Attributes:
+        timestamp: Unix timestamp in milliseconds
+        state: State of the instrument (e.g., 'open', 'closed')
+        stats: Trading statistics
+        greeks: Option Greeks
+        change_id: Order book change identifier
+        index_price: Current index price
+        instrument_name: Name of the instrument
+        bids: List of bid orders [price, amount]
+        asks: List of ask orders [price, amount]
+        last_price: Last traded price
+        min_price: Minimum price
+        max_price: Maximum price
+        open_interest: Open interest
+        mark_price: Mark price
+        best_ask_price: Best ask price
+        best_bid_price: Best bid price
+        interest_rate: Interest rate
+        mark_iv: Mark implied volatility
+        bid_iv: Bid implied volatility
+        ask_iv: Ask implied volatility
+        underlying_price: Price of the underlying asset
+        underlying_index: Name of the underlying index
+        estimated_delivery_price: Estimated delivery price
+        best_ask_amount: Amount at best ask
+        best_bid_amount: Amount at best bid
+        delivery_price: Delivery price
+    """
+    timestamp: int
+    state: str
+    stats: OrderBookStats
+    greeks: OrderBookGreeks
+    change_id: int
+    index_price: float
+    instrument_name: str
+    bids: List[OrderBookEntry]
+    asks: List[OrderBookEntry]
+    last_price: Optional[float]
+    min_price: float
+    max_price: float
+    open_interest: float
+    mark_price: float
+    best_ask_price: float
+    best_bid_price: float
+    interest_rate: float
+    mark_iv: float
+    bid_iv: float
+    ask_iv: float
+    underlying_price: float
+    underlying_index: str
+    estimated_delivery_price: str
+    best_ask_amount: float
+    best_bid_amount: float
+    delivery_price: float
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'OrderBook':
+        """Create an OrderBook instance from a dictionary."""
+        # Convert stats dictionary to OrderBookStats
+        stats = OrderBookStats(**data.get('stats', {}))
+        
+        # Convert greeks dictionary to OrderBookGreeks
+        greeks = OrderBookGreeks(**data.get('greeks', {}))
+        
+        # Convert bids and asks lists to OrderBookEntry objects
+        bids = [OrderBookEntry(price=b[0], amount=b[1]) for b in data.get('bids', [])]
+        asks = [OrderBookEntry(price=a[0], amount=a[1]) for a in data.get('asks', [])]
+        
+        # Create OrderBook instance with all fields
+        return cls(
+            timestamp=data['timestamp'],
+            state=data['state'],
+            stats=stats,
+            greeks=greeks,
+            change_id=data['change_id'],
+            index_price=data['index_price'],
+            instrument_name=data['instrument_name'],
+            bids=bids,
+            asks=asks,
+            last_price=data['last_price'],
+            min_price=data['min_price'],
+            max_price=data['max_price'],
+            open_interest=data['open_interest'],
+            mark_price=data['mark_price'],
+            best_ask_price=data['best_ask_price'],
+            best_bid_price=data['best_bid_price'],
+            interest_rate=data['interest_rate'],
+            mark_iv=data['mark_iv'],
+            bid_iv=data['bid_iv'],
+            ask_iv=data['ask_iv'],
+            underlying_price=data['underlying_price'],
+            underlying_index=data['underlying_index'],
+            estimated_delivery_price=data['estimated_delivery_price'],
+            best_ask_amount=data['best_ask_amount'],
+            best_bid_amount=data['best_bid_amount'],
+            delivery_price=data['delivery_price']
+        )
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert the OrderBook to a dictionary."""
+        return {
+            'timestamp': self.timestamp,
+            'state': self.state,
+            'stats': asdict(self.stats),
+            'greeks': asdict(self.greeks),
+            'change_id': self.change_id,
+            'index_price': self.index_price,
+            'instrument_name': self.instrument_name,
+            'bids': [[b.price, b.amount] for b in self.bids],
+            'asks': [[a.price, a.amount] for a in self.asks],
+            'last_price': self.last_price,
+            'min_price': self.min_price,
+            'max_price': self.max_price,
+            'open_interest': self.open_interest,
+            'mark_price': self.mark_price,
+            'best_ask_price': self.best_ask_price,
+            'best_bid_price': self.best_bid_price,
+            'interest_rate': self.interest_rate,
+            'mark_iv': self.mark_iv,
+            'bid_iv': self.bid_iv,
+            'ask_iv': self.ask_iv,
+            'underlying_price': self.underlying_price,
+            'underlying_index': self.underlying_index,
+            'estimated_delivery_price': self.estimated_delivery_price,
+            'best_ask_amount': self.best_ask_amount,
+            'best_bid_amount': self.best_bid_amount,
+            'delivery_price': self.delivery_price
+        }
+
+    @property
+    def datetime(self) -> datetime:
+        """Convert timestamp to datetime object."""
+        return datetime.fromtimestamp(self.timestamp / 1000)  # Convert from milliseconds to seconds
 
 
 @dataclass
