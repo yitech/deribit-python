@@ -270,7 +270,7 @@ class Ticker:
     best_bid_amount: float
     best_bid_price: float
     current_funding: Optional[float]
-    estimated_delivery_price: float
+    estimated_delivery_price: Optional[float]
     funding_8h: Optional[float]
     index_price: float
     instrument_name: str
@@ -279,7 +279,7 @@ class Ticker:
     mark_price: float
     max_price: float
     min_price: float
-    open_interest: float
+    open_interest: Optional[float]
     settlement_price: Optional[float]
     state: str
     stats: TickerStats
@@ -294,7 +294,7 @@ class Ticker:
             best_bid_amount=data['best_bid_amount'],
             best_bid_price=data['best_bid_price'],
             current_funding=data.get('current_funding'),
-            estimated_delivery_price=data['estimated_delivery_price'],
+            estimated_delivery_price=data.get('estimated_delivery_price'),
             funding_8h=data.get('funding_8h'),
             index_price=data['index_price'],
             instrument_name=data['instrument_name'],
@@ -303,8 +303,8 @@ class Ticker:
             mark_price=data['mark_price'],
             max_price=data['max_price'],
             min_price=data['min_price'],
-            open_interest=data['open_interest'],
-            settlement_price=data['settlement_price'],
+            open_interest=data.get('open_interest'),
+            settlement_price=data.get('settlement_price'),
             state=data['state'],
             stats=stats
         )
