@@ -14,13 +14,13 @@ class DeribitMethod(StrEnum):
     Deribit API method names.
     """
     # Public methods
-    GET_TICKER = "public/get_ticker"
+    GET_INSTRUMENTS = "/public/get_instruments"
     GET_ORDER_BOOK = "public/get_order_book"
+    GET_TICKER = "public/ticker"
     GET_INSTRUMENT_INFO = "public/get_instrument_info"
     GET_INSTRUMENT_EXCHANGE_RATE = "public/get_instrument_exchange_rate"
     GET_TIME = "public/get_time"
     GET_CURRENCIES = "public/get_currencies"
-    GET_INSTRUMENTS = "public/get_instruments"
     GET_LAST_TRADES = "public/get_last_trades"
     GET_SUMMARY = "public/get_summary"
     GET_ANNOUNCEMENTS = "public/get_announcements"
