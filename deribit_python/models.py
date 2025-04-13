@@ -4,6 +4,63 @@ import uuid
 import json
 from datetime import datetime
 
+@dataclass
+class Instrument:
+    """
+    Represents a trading instrument (spot, future, or option).
+    """
+    price_index: str
+    rfq: bool
+    kind: str
+    instrument_name: str
+    maker_commission: float
+    taker_commission: float
+    instrument_type: str
+    expiration_timestamp: int
+    creation_timestamp: int
+    is_active: bool
+    tick_size: float
+    contract_size: float
+    instrument_id: int
+    min_trade_amount: float
+    base_currency: str
+    counter_currency: str
+    quote_currency: str
+
+    # Optional/default fields must come **after** all required fields
+    tick_size_steps: List[Any] = field(default_factory=list)
+
+    block_trade_commission: Optional[float] = None
+    block_trade_min_trade_amount: Optional[float] = None
+    block_trade_tick_size: Optional[float] = None
+
+    settlement_period: Optional[str] = None
+    future_type: Optional[str] = None
+    max_leverage: Optional[float] = None
+    max_liquidation_commission: Optional[float] = None
+    settlement_currency: Optional[str] = None
+
+    option_type: Optional[str] = None  # "call" or "put"
+    strike: Optional[float] = None
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'Instrument':
+        """Create an Instrument instance from a dictionary."""
+        return cls(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert the Instrument to a dictionary."""
+        return asdict(self)
+
+    @property
+    def created_at(self) -> datetime:
+        """Creation timestamp as a datetime object."""
+        return datetime.fromtimestamp(self.creation_timestamp / 1000)
+
+    @property
+    def expires_at(self) -> datetime:
+        """Expiration timestamp as a datetime object."""
+        return datetime.fromtimestamp(self.expiration_timestamp / 1000)
 
 @dataclass
 class OrderBookStats:
@@ -78,20 +135,20 @@ class OrderBook:
     last_price: Optional[float]
     min_price: float
     max_price: float
-    open_interest: float
+    open_interest: Optional[float]
     mark_price: float
     best_ask_price: float
     best_bid_price: float
-    interest_rate: float
-    mark_iv: float
-    bid_iv: float
-    ask_iv: float
-    underlying_price: float
-    underlying_index: str
-    estimated_delivery_price: str
+    interest_rate: Optional[float]
+    mark_iv: Optional[float]
+    bid_iv: Optional[float]
+    ask_iv: Optional[float]
+    underlying_price: Optional[float]
+    underlying_index: Optional[str]
+    estimated_delivery_price: Optional[str]
     best_ask_amount: float
     best_bid_amount: float
-    delivery_price: float
+    delivery_price: Optional[float]
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'OrderBook':
@@ -120,20 +177,20 @@ class OrderBook:
             last_price=data['last_price'],
             min_price=data['min_price'],
             max_price=data['max_price'],
-            open_interest=data['open_interest'],
+            open_interest=data.get('open_interest'),
             mark_price=data['mark_price'],
             best_ask_price=data['best_ask_price'],
             best_bid_price=data['best_bid_price'],
-            interest_rate=data['interest_rate'],
-            mark_iv=data['mark_iv'],
-            bid_iv=data['bid_iv'],
-            ask_iv=data['ask_iv'],
-            underlying_price=data['underlying_price'],
-            underlying_index=data['underlying_index'],
-            estimated_delivery_price=data['estimated_delivery_price'],
+            interest_rate=data.get('interest_rate'),
+            mark_iv=data.get('mark_iv'),
+            bid_iv=data.get('bid_iv'),
+            ask_iv=data.get('ask_iv'),
+            underlying_price=data.get('underlying_price'),
+            underlying_index=data.get('underlying_index'),
+            estimated_delivery_price=data.get('estimated_delivery_price'),
             best_ask_amount=data['best_ask_amount'],
             best_bid_amount=data['best_bid_amount'],
-            delivery_price=data['delivery_price']
+            delivery_price=data.get('delivery_price')
         )
 
     def to_dict(self) -> Dict[str, Any]:
