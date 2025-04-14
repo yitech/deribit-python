@@ -17,6 +17,8 @@ class DeribitMethod(StrEnum):
     GET_INSTRUMENTS = "/public/get_instruments"
     GET_ORDER_BOOK = "public/get_order_book"
     GET_TICKER = "public/ticker"
+    GET_BOOK_SUMMARY_BY_CURRENCY="public/get_book_summary_by_currency"
+
     GET_INSTRUMENT_INFO = "public/get_instrument_info"
     GET_INSTRUMENT_EXCHANGE_RATE = "public/get_instrument_exchange_rate"
     GET_TIME = "public/get_time"

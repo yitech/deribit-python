@@ -494,3 +494,86 @@ class JsonRpcResponse:
             The error message if the response contains an error, None otherwise
         """
         return self.error.get("message") if self.error else None
+    
+@dataclass
+class BookSummary:
+    """
+    Represents a summary of the order book for an instrument.
+
+    Attributes:
+        high: Highest traded price in the timeframe
+        low: Lowest traded price in the timeframe
+        last: Last traded price
+        instrument_name: Name of the instrument
+        bid_price: Current best bid price
+        ask_price: Current best ask price
+        mark_price: Mark price
+        creation_timestamp: Timestamp of this summary in milliseconds
+        price_change: Percentage price change in the timeframe
+        open_interest: Open interest (only for derivatives)
+        interest_rate: Interest rate (only for options)
+        mark_iv: Mark implied volatility (only for options)
+        underlying_price: Underlying asset price (only for options)
+        underlying_index: Underlying index name (only for options)
+        base_currency: Base currency of the instrument
+        quote_currency: Quote currency of the instrument
+        estimated_delivery_price: Estimated delivery price at maturity
+        volume: Trading volume in base currency
+        volume_usd: Trading volume in USD
+        volume_notional: Notional trading volume in quote currency
+        mid_price: Midpoint between bid and ask
+    """
+    high: Optional[float]
+    low: Optional[float]
+    last: float
+    instrument_name: str
+    bid_price: float
+    ask_price: float
+    mark_price: float
+    creation_timestamp: int
+    price_change: Optional[float]
+    open_interest: Optional[float] = None
+    interest_rate: Optional[float] = None
+    mark_iv: Optional[float] = None
+    underlying_price: Optional[float] = None
+    underlying_index: Optional[str] = None
+    base_currency: str = ''
+    quote_currency: str = ''
+    estimated_delivery_price: Optional[float] = None
+    volume: Optional[float] = None
+    volume_usd: Optional[float] = None
+    volume_notional: Optional[float] = None
+    mid_price: Optional[float] = None
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'BookSummary':
+        return cls(
+            high=data.get("high"),
+            low=data.get("low"),
+            last=data["last"],
+            instrument_name=data["instrument_name"],
+            bid_price=data["bid_price"],
+            ask_price=data["ask_price"],
+            mark_price=data["mark_price"],
+            creation_timestamp=data["creation_timestamp"],
+            price_change=data.get("price_change"),
+            open_interest=data.get("open_interest"),
+            interest_rate=data.get("interest_rate"),
+            mark_iv=data.get("mark_iv"),
+            underlying_price=data.get("underlying_price"),
+            underlying_index=data.get("underlying_index"),
+            base_currency=data.get("base_currency", ""),
+            quote_currency=data.get("quote_currency", ""),
+            estimated_delivery_price=data.get("estimated_delivery_price"),
+            volume=data.get("volume"),
+            volume_usd=data.get("volume_usd"),
+            volume_notional=data.get("volume_notional"),
+            mid_price=data.get("mid_price"),
+        )
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+    @property
+    def datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.creation_timestamp / 1000)

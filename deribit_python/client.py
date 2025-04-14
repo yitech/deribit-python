@@ -6,7 +6,7 @@ This module provides the main client class for interacting with the Deribit API.
 from typing import Dict, Optional, Union, Any, List
 import requests
 from .models import (
-    JsonRpcRequest, JsonRpcResponse, OrderBook, Ticker, Instrument
+    JsonRpcRequest, JsonRpcResponse, OrderBook, Ticker, Instrument, BookSummary
     )
 from .exceptions import DeribitAPIException
 from .consts import DeribitMethod, TESTNET_BASE_URL, MAINNET_BASE_URL
@@ -138,8 +138,30 @@ class DeribitClient:
                 "depth": depth
             }
         )
-        print(result)
         return OrderBook.from_dict(result)
+    
+    def get_book_summary_by_currency(self, currency: str, kind: Optional[str]) -> List[Dict[str, Any]]:
+        """
+        Get the book summary by currency.
+        
+        Args:
+            currency: The currency to get the book summary for
+            kind: The kind of instruments to include (optional)
+            
+        Returns:
+            List of book summaries for the given currency
+            
+        Raises:
+            DeribitAPIException: If the API request fails
+        """
+        params = {"currency": currency}
+        if kind is not None:
+            params["kind"] = kind
+        result = self._make_request(
+            DeribitMethod.GET_BOOK_SUMMARY_BY_CURRENCY,
+            params
+        )
+        return [BookSummary.from_dict(item) for item in result]
             
 
     
