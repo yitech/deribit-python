@@ -597,3 +597,122 @@ class ContractSize:
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
+    
+@dataclass
+class WithdrawalPriority:
+    """
+    Represents a withdrawal priority level for a currency.
+
+    Attributes:
+        value: The fee value associated with this priority level.
+        name: The name of the priority level (e.g., 'very_low', 'very_high').
+    """
+    value: float
+    name: str
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'WithdrawalPriority':
+        return cls(
+            value=data["value"],
+            name=data["name"]
+        )
+
+
+@dataclass
+class Currency:
+    """
+    Represents a cryptocurrency with its withdrawal and confirmation details.
+
+    Attributes:
+        coin_type: Internal type identifier for the coin (e.g., 'ETHER', 'BITCOIN').
+        currency: Short symbol of the currency (e.g., 'ETH', 'BTC').
+        currency_long: Full name of the currency.
+        fee_precision: Number of decimal places used for fee representation.
+        min_confirmations: Minimum number of confirmations required for deposits.
+        min_withdrawal_fee: Minimum fee that can be set for a withdrawal.
+        withdrawal_fee: Default withdrawal fee.
+        withdrawal_priorities: Available withdrawal priority options with associated fees.
+    """
+    coin_type: str
+    currency: str
+    currency_long: str
+    fee_precision: int
+    min_confirmations: int
+    min_withdrawal_fee: float
+    withdrawal_fee: float
+    withdrawal_priorities: List[WithdrawalPriority] = field(default_factory=list)
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'Currency':
+        priorities = [WithdrawalPriority.from_dict(p) for p in data.get("withdrawal_priorities", [])]
+        return cls(
+            coin_type=data["coin_type"],
+            currency=data["currency"],
+            currency_long=data["currency_long"],
+            fee_precision=data["fee_precision"],
+            min_confirmations=data["min_confirmations"],
+            min_withdrawal_fee=data["min_withdrawal_fee"],
+            withdrawal_fee=data["withdrawal_fee"],
+            withdrawal_priorities=priorities
+        )
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "coin_type": self.coin_type,
+            "currency": self.currency,
+            "currency_long": self.currency_long,
+            "fee_precision": self.fee_precision,
+            "min_confirmations": self.min_confirmations,
+            "min_withdrawal_fee": self.min_withdrawal_fee,
+            "withdrawal_fee": self.withdrawal_fee,
+            "withdrawal_priorities": [asdict(p) for p in self.withdrawal_priorities]
+        }
+
+@dataclass
+class DeliveryPrice:
+    """
+    Represents the delivery price for a specific date.
+
+    Attributes:
+        date: The date of the delivery price in YYYY-MM-DD format.
+        delivery_price: The delivery price on that date.
+    """
+    date: str
+    delivery_price: float
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'DeliveryPrice':
+        return cls(
+            date=data["date"],
+            delivery_price=data["delivery_price"]
+        )
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass
+class DeliveryPriceResponse:
+    """
+    Represents the response containing delivery prices.
+
+    Attributes:
+        data: A list of delivery price entries.
+        records_total: Total number of delivery price records available.
+    """
+    data: List[DeliveryPrice]
+    records_total: int
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'DeliveryPriceResponse':
+        prices = [DeliveryPrice.from_dict(item) for item in data["data"]]
+        return cls(
+            data=prices,
+            records_total=data["records_total"]
+        )
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "data": [entry.to_dict() for entry in self.data],
+            "records_total": self.records_total
+        }

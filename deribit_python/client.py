@@ -7,7 +7,7 @@ from typing import Dict, Optional, Union, Any, List
 import requests
 from .models import (
     JsonRpcRequest, JsonRpcResponse, 
-    OrderBook, Ticker, Instrument, BookSummary, ContractSize
+    OrderBook, Ticker, Instrument, BookSummary, ContractSize, Currency, DeliveryPriceResponse
 )
 from .exceptions import DeribitAPIException
 from .consts import DeribitMethod, TESTNET_BASE_URL, MAINNET_BASE_URL
@@ -205,6 +205,48 @@ class DeribitClient:
             }
         )
         return ContractSize.from_dict(result)
+    
+    def get_currencies(self) -> List[Dict[str, Any]]:
+        """
+        Get the list of available currencies.
+        
+        Returns:
+            List of available currencies
+            
+        Raises:
+            DeribitAPIException: If the API request fails
+        """
+        result = self._make_request(
+            DeribitMethod.GET_CURRENCIES,
+            {}
+        )
+        return [Currency.from_dict(item) for item in result]
+    
+    def get_delivery_prices(self, index_name: str, offset: Optional[int] = None, count: Optional[int] = None) -> List[Dict[str, Any]]:
+        """
+        Get the delivery prices for a given instrument.
+        
+        Args:
+            instrument_name: The name of the instrument
+            
+        Returns:
+            List of delivery prices for the given instrument
+            
+        Raises:
+            DeribitAPIException: If the API request fails
+        """
+        params = {
+            "index_name": index_name
+        }
+        if offset is not None:
+            params["offset"] = offset
+        if count is not None:
+            params["count"] = count
+        result = self._make_request(
+            DeribitMethod.GET_DELIVERY_PRICES,
+            params
+        )
+        return DeliveryPriceResponse.from_dict(result)
             
 
     
