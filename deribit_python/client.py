@@ -87,12 +87,12 @@ class DeribitClient:
         except Exception as e:
             raise DeribitAPIException(f"Unexpected error: {str(e)}")
         
-    def get_instruments(self, instrument_name: Optional[str] = None, kind: str = None, expire: bool = True) -> List[Dict[str, Any]]:
+    def get_instruments(self, currency: Optional[str] = None, kind: str = None, expire: bool = False) -> List[Instrument]:
         params = {}
-        if instrument_name is None:
-            params.update({"instrument_name": instrument_name})
+        if currency is None:
+            params.update({"currency": "any"})
         else:
-            params = {"instrument_name": instrument_name}
+            params = {"currency": currency}
         if kind is not None:
             params.update({"kind": kind})
         params.update({"expire": expire})
@@ -141,7 +141,7 @@ class DeribitClient:
         )
         return OrderBook.from_dict(result)
     
-    def get_book_summary_by_currency(self, currency: str, kind: Optional[str]) -> List[Dict[str, Any]]:
+    def get_book_summary_by_currency(self, currency: str, kind: Optional[str]) -> List[BookSummary]:
         """
         Get the book summary by currency.
         
@@ -164,7 +164,7 @@ class DeribitClient:
         )
         return [BookSummary.from_dict(item) for item in result]
     
-    def get_book_summary_by_instrument(self, instrument_name: str) -> List[Dict[str, Any]]:
+    def get_book_summary_by_instrument(self, instrument_name: str) -> List[BookSummary]:
         """
         Get the book summary by instrument.
         
@@ -206,7 +206,7 @@ class DeribitClient:
         )
         return ContractSize.from_dict(result)
     
-    def get_currencies(self) -> List[Dict[str, Any]]:
+    def get_currencies(self) -> List[Currency]:
         """
         Get the list of available currencies.
         
@@ -222,7 +222,7 @@ class DeribitClient:
         )
         return [Currency.from_dict(item) for item in result]
     
-    def get_delivery_prices(self, index_name: str, offset: Optional[int] = None, count: Optional[int] = None) -> List[Dict[str, Any]]:
+    def get_delivery_prices(self, index_name: str, offset: Optional[int] = None, count: Optional[int] = None) -> DeliveryPriceResponse:
         """
         Get the delivery prices for a given instrument.
         
