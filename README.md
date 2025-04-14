@@ -78,6 +78,7 @@ order = client.create_order(
     price=50000,
     type="limit"
 )
+print(f"Order placed: {order}")
 ```
 
 ## JSON-RPC Support

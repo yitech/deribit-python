@@ -5,9 +5,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="deribit-python",
-    version="0.1.0",
-    author="Your Name",
-    author_email="your.email@example.com",
+    version="0.2.0",
+    author="yite",
+    author_email="coastq22889@icloud.com",
     description="A Python wrapper for the Deribit cryptocurrency exchange API",
     long_description=long_description,
     long_description_content_type="text/markdown",
