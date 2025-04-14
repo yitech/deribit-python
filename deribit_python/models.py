@@ -716,3 +716,63 @@ class DeliveryPriceResponse:
             "data": [entry.to_dict() for entry in self.data],
             "records_total": self.records_total
         }
+
+@dataclass
+class FundingChartPoint:
+    """
+    Represents a single data point in the funding chart.
+
+    Attributes:
+        index_price: The index price at the timestamp.
+        interest_8h: The 8-hour interest rate at the timestamp.
+        timestamp: Unix timestamp in milliseconds.
+    """
+    index_price: float
+    interest_8h: float
+    timestamp: int
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'FundingChartPoint':
+        return cls(
+            index_price=data["index_price"],
+            interest_8h=data["interest_8h"],
+            timestamp=data["timestamp"]
+        )
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+    
+    @property
+    def datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.timestamp / 1000)
+
+
+@dataclass
+class FundingChartData:
+    """
+    Represents funding chart data for a trading instrument.
+
+    Attributes:
+        current_interest: Current interest rate.
+        data: Historical funding data points.
+        interest_8h: Most recent 8-hour interest rate.
+    """
+    current_interest: float
+    data: List[FundingChartPoint]
+    interest_8h: float
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'FundingChartData':
+        points = [FundingChartPoint.from_dict(p) for p in data["data"]]
+        return cls(
+            current_interest=data["current_interest"],
+            data=points,
+            interest_8h=data["interest_8h"]
+        )
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "current_interest": self.current_interest,
+            "data": [point.to_dict() for point in self.data],
+            "interest_8h": self.interest_8h
+        }

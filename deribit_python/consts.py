@@ -22,6 +22,8 @@ class DeribitMethod(StrEnum):
     GET_CONTRACT_SIZE = "public/get_contract_size"
     GET_CURRENCIES = "public/get_currencies"
     GET_DELIVERY_PRICES = "public/get_delivery_prices"
+    GET_EXPIRATIONS = "public/get_expirations"
+    GET_FUNDING_CHART_DATA = "public/get_funding_chart_data"
 
 
     GET_INSTRUMENT_INFO = "public/get_instrument_info"
@@ -31,7 +33,6 @@ class DeribitMethod(StrEnum):
     GET_SUMMARY = "public/get_summary"
     GET_ANNOUNCEMENTS = "public/get_announcements"
     GET_BOOK_SUMMARY = "public/get_book_summary"
-    GET_FUNDING_CHART_DATA = "public/get_funding_chart_data"
     GET_HISTORICAL_VOLATILITY = "public/get_historical_volatility"
     GET_INDEX = "public/get_index"
     GET_TRADINGVIEW_CHART_DATA = "public/get_tradingview_chart_data"

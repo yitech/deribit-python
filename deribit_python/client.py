@@ -7,7 +7,8 @@ from typing import Dict, Optional, Union, Any, List
 import requests
 from .models import (
     JsonRpcRequest, JsonRpcResponse, 
-    OrderBook, Ticker, Instrument, BookSummary, ContractSize, Currency, DeliveryPriceResponse
+    OrderBook, Ticker, Instrument, BookSummary, ContractSize, Currency, DeliveryPriceResponse,
+    FundingChartData
 )
 from .exceptions import DeribitAPIException
 from .consts import DeribitMethod, TESTNET_BASE_URL, MAINNET_BASE_URL
@@ -87,12 +88,8 @@ class DeribitClient:
         except Exception as e:
             raise DeribitAPIException(f"Unexpected error: {str(e)}")
         
-    def get_instruments(self, currency: Optional[str] = None, kind: str = None, expire: bool = False) -> List[Instrument]:
-        params = {}
-        if currency is None:
-            params.update({"currency": "any"})
-        else:
-            params = {"currency": currency}
+    def get_instruments(self, currency: str = "any", kind: str = None, expire: bool = False) -> List[Instrument]:
+        params = {"currency": currency}
         if kind is not None:
             params.update({"kind": kind})
         params.update({"expire": expire})
@@ -247,6 +244,55 @@ class DeribitClient:
             params
         )
         return DeliveryPriceResponse.from_dict(result)
+    
+    def get_expirations(self, currency: str = "any", kind: str = "any") -> List[Dict[str, Any]]:
+        """
+        Get the list of expirations for a given currency and kind.
+        
+        Args:
+            currency: The currency to get expirations for
+            kind: The kind of instruments to include
+            
+        Returns:
+            List of expirations for the given currency and kind
+            
+        Raises:
+            DeribitAPIException: If the API request fails
+        """
+        params = {
+            "currency": currency,
+            "kind": kind
+        }
+        result = self._make_request(
+            DeribitMethod.GET_EXPIRATIONS,
+            params
+        )
+        return result
+    
+    def get_funding_chart_data(self, instrument_name: str, length: str) -> FundingChartData:
+        """
+        Get the funding chart data for a given instrument.
+        
+        Args:
+            instrument_name: The name of the instrument
+            start_timestamp: The start timestamp for the data (optional)
+            end_timestamp: The end timestamp for the data (optional)
+            
+        Returns:
+            List of funding chart data for the given instrument
+            
+        Raises:
+            DeribitAPIException: If the API request fails
+        """
+        params = {
+            "instrument_name": instrument_name,
+            "length": length
+        }
+        result = self._make_request(
+            DeribitMethod.GET_FUNDING_CHART_DATA,
+            params
+        )
+        return FundingChartData.from_dict(result)
             
 
     
