@@ -162,6 +162,27 @@ class DeribitClient:
             params
         )
         return [BookSummary.from_dict(item) for item in result]
+    
+    def get_book_summary_by_instrument(self, instrument_name: str) -> List[Dict[str, Any]]:
+        """
+        Get the book summary by instrument.
+        
+        Args:
+            instrument_name: The name of the instrument
+            
+        Returns:
+            List of book summaries for the given instrument
+            
+        Raises:
+            DeribitAPIException: If the API request fails
+        """
+        result = self._make_request(
+            DeribitMethod.GET_BOOK_SUMMARY_BY_INSTRUMENT,
+            {
+                "instrument_name": instrument_name
+            }
+        )
+        return [BookSummary.from_dict(item) for item in result]
             
 
     
