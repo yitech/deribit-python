@@ -6,8 +6,9 @@ This module provides the main client class for interacting with the Deribit API.
 from typing import Dict, Optional, Union, Any, List
 import requests
 from .models import (
-    JsonRpcRequest, JsonRpcResponse, OrderBook, Ticker, Instrument, BookSummary
-    )
+    JsonRpcRequest, JsonRpcResponse, 
+    OrderBook, Ticker, Instrument, BookSummary, ContractSize
+)
 from .exceptions import DeribitAPIException
 from .consts import DeribitMethod, TESTNET_BASE_URL, MAINNET_BASE_URL
 
@@ -183,6 +184,27 @@ class DeribitClient:
             }
         )
         return [BookSummary.from_dict(item) for item in result]
+    
+    def get_contract_size(self, instrument_name: str) -> float:
+        """
+        Get the contract size for a given instrument.
+        
+        Args:
+            instrument_name: The name of the instrument
+            
+        Returns:
+            The contract size for the given instrument
+            
+        Raises:
+            DeribitAPIException: If the API request fails
+        """
+        result = self._make_request(
+            DeribitMethod.GET_CONTRACT_SIZE,
+            {
+                "instrument_name": instrument_name
+            }
+        )
+        return ContractSize.from_dict(result)
             
 
     

@@ -577,3 +577,23 @@ class BookSummary:
     @property
     def datetime(self) -> datetime:
         return datetime.fromtimestamp(self.creation_timestamp / 1000)
+    
+@dataclass
+class ContractSize:
+    """
+    Represents the contract size for a given instrument.
+    
+    Attributes:
+        contract_size: Size of the contract
+    """
+    contract_size: float
+
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'ContractSize':
+        return cls(
+            contract_size=data["contract_size"],
+        )
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
