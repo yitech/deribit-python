@@ -10,7 +10,7 @@ from .models import (
     OrderBook, Ticker, Instrument, BookSummary, ContractSize, Currency, DeliveryPriceResponse,
     FundingChartData
 )
-from .exceptions import DeribitAPIException
+from .exceptions import DeribitAPIException, raise_deribit_exception
 from .consts import DeribitMethod, TESTNET_BASE_URL, MAINNET_BASE_URL
 
 class DeribitClient:
@@ -77,10 +77,10 @@ class DeribitClient:
             jsonrpc_response = JsonRpcResponse.from_dict(response.json())
             
             if jsonrpc_response.is_error:
-                raise DeribitAPIException(
-                    f"API Error: {jsonrpc_response.error_message} (code: {jsonrpc_response.error_code})"
+                raise_deribit_exception(
+                    jsonrpc_response.error_code,
+                    jsonrpc_response.error_message
                 )
-                
             return jsonrpc_response.result
             
         except requests.exceptions.RequestException as e:
@@ -112,7 +112,6 @@ class DeribitClient:
                 "instrument_name": instrument_name
             }
         )
-        print(result)
         return Ticker.from_dict(result)
 
     def get_order_book(self, instrument_name: str, depth: int = 10) -> OrderBook:
