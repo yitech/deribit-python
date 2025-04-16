@@ -8,6 +8,9 @@ Constants used throughout the Deribit API wrapper.
 TESTNET_BASE_URL = "https://test.deribit.com/api/v2"
 MAINNET_BASE_URL = "https://www.deribit.com/api/v2"
 
+TESTNET_WS_URL = "wss://test.deribit.com/ws/api/v2"
+MAINNET_WS_URL = "wss://www.deribit.com/ws/api/v2"
+
 
 class DeribitMethod(StrEnum):
     """
