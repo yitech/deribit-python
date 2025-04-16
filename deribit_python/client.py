@@ -8,7 +8,7 @@ import requests
 from .models import (
     JsonRpcRequest, JsonRpcResponse, 
     OrderBook, Ticker, Instrument, BookSummary, ContractSize, Currency, DeliveryPriceResponse,
-    FundingChartData
+    FundingChartData, FundingHistory
 )
 from .exceptions import DeribitAPIException, raise_deribit_exception
 from .consts import DeribitMethod, TESTNET_BASE_URL, MAINNET_BASE_URL
@@ -292,6 +292,32 @@ class DeribitClient:
             params
         )
         return FundingChartData.from_dict(result)
+    
+    def get_funding_rate_history(self, instrument_name: str, start_timestamp: int, end_timestamp: int) -> List[FundingHistory]:
+        """
+        Get the funding rate history for a given instrument.
+        
+        Args:
+            instrument_name: The name of the instrument
+            start_timestamp: The start timestamp for the data
+            end_timestamp: The end timestamp for the data
+            
+        Returns:
+            List of funding rate history for the given instrument
+            
+        Raises:
+            DeribitAPIException: If the API request fails
+        """
+        params = {
+            "instrument_name": instrument_name,
+            "start_timestamp": start_timestamp,
+            "end_timestamp": end_timestamp
+        }
+        result = self._make_request(
+            DeribitMethod.GET_FUNDING_RATE_HISTORY,
+            params
+        )
+        return [FundingHistory.from_dict(item) for item in result]
             
 
     
