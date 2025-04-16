@@ -1,130 +1,80 @@
-# Deribit Python Wrapper
+# Deribit Python Client
 
-A Python wrapper for the Deribit cryptocurrency exchange API. This library provides a simple and intuitive interface to interact with Deribit's trading platform.
+A lightweight Python client for interacting with the [Deribit](https://docs.deribit.com/) cryptocurrency exchange API.
 
-## Features
+Supports:
+- ✅ **Public HTTP (JSON-RPC)** methods (sync & async)
+- 🚧 **Private HTTP** and **WebSocket Streaming API** (coming soon)
 
-- REST API integration
-- JSON-RPC support for both HTTP and WebSocket
-- WebSocket support for real-time data
-- Support for both testnet and mainnet
-- Comprehensive error handling
-- Type hints for better IDE support
-- Async/await support for modern Python applications
-- Structured data models with dataclasses
+This module uses:
+- HTTP requests (JSON-RPC over HTTP) for **synchronous** calls
+- WebSocket (JSON-RPC over WebSocket) for **asynchronous** methods  
+**➡️ We recommend using the async client for real-time data and better performance.**
 
-## Installation
+---
+
+## 🚀 Installation
+
+Install via Git:
 
 ```bash
-pip install deribit-python
+git clone https://github.com/yitech/deribit-python.git
+cd deribit-python
+pip install .
 ```
-
-## Quick Start
+## 🧩 Synchronous Example
 
 ```python
-from deribit import DeribitClient
+from deribit_python.client import DeribitClient
+import time
 
-# Initialize the client (testnet)
-client = DeribitClient(
-    api_key="your_api_key",
-    api_secret="your_api_secret",
-    testnet=True
-)
+def main():
+    api_key = ""
+    api_secret = ""
 
-# Get BTC-PERPETUAL ticker
-ticker = client.get_ticker("BTC-PERPETUAL")
-print(f"Current BTC price: {ticker['last_price']}")
+    client = DeribitClient(api_key=api_key, api_secret=api_secret, testnet=True)
 
-# Get order book for an instrument
-order_book = client.get_order_book(
-    instrument_name="BTC-PERPETUAL",
-    depth=10
-)
+    instrument_name = "BTC-PERPETUAL"
+    try:
+        end_time = int(time.time() * 1000)
+        start_time = end_time - 86400000  # 24 hours ago
 
-# Access order book data through structured attributes
-print(f"Best bid price: {order_book.best_bid_price}")
-print(f"Best ask price: {order_book.best_ask_price}")
-print(f"Mark price: {order_book.mark_price}")
-print(f"Underlying price: {order_book.underlying_price}")
+        res = client.get_funding_rate_history(instrument_name, start_time, end_time)
+        print("Funding Rate History:", res)
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
-# Access order book entries
-print("\nTop 3 bids:")
-for bid in order_book.bids[:3]:
-    print(f"Price: {bid.price}, Amount: {bid.amount}")
-
-print("\nTop 3 asks:")
-for ask in order_book.asks[:3]:
-    print(f"Price: {ask.price}, Amount: {ask.amount}")
-
-# Access statistics
-print(f"\n24h High: {order_book.stats.high}")
-print(f"24h Low: {order_book.stats.low}")
-print(f"24h Volume: {order_book.stats.volume}")
-
-# Access Greeks (for options)
-print(f"\nDelta: {order_book.greeks.delta}")
-print(f"Gamma: {order_book.greeks.gamma}")
-print(f"Vega: {order_book.greeks.vega}")
-print(f"Theta: {order_book.greeks.theta}")
-
-# Get timestamp as datetime
-print(f"\nOrder book timestamp: {order_book.datetime}")
-
-# Place a limit order
-order = client.create_order(
-    instrument_name="BTC-PERPETUAL",
-    side="buy",
-    amount=0.1,
-    price=50000,
-    type="limit"
-)
-print(f"Order placed: {order}")
+if __name__ == "__main__":
+    main()
 ```
 
-## JSON-RPC Support
-
-This library supports both HTTP and WebSocket JSON-RPC methods. The JSON-RPC functionality is handled automatically by the client, but you can also use the JSON-RPC classes directly if needed:
+## ⚡ Asynchronous Example (Recommended)
 
 ```python
-from deribit import JsonRpcRequest, JsonRpcResponse
+import asyncio
+from deribit_python.async_client import DeribitAsyncClient
 
-# Create a JSON-RPC request
-request = JsonRpcRequest(
-    method="get_order_book",
-    params={
-        "instrument_name": "BTC-PERPETUAL",
-        "depth": 10
-    }
-)
+async def main():
+    api_key = ""
+    api_secret = ""
 
-# Convert to JSON
-json_request = request.to_json()
-print(json_request)
+    async with DeribitAsyncClient(api_key=api_key, api_secret=api_secret, testnet=False) as client:
+        instrument_name = "BTC-PERPETUAL"
+        try:
+            ticker = await client.get_ticker(instrument_name)
+            print("Ticker Information:")
+            print(ticker)
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
-# Parse a JSON-RPC response
-response_data = {
-    "jsonrpc": "2.0",
-    "result": {
-        "timestamp": 1744208208919,
-        "state": "open",
-        "bids": [],
-        "asks": []
-    },
-    "id": "123",
-    "testnet": True
-}
-response = JsonRpcResponse(response_data)
-print(response.result)
+asyncio.run(main())
 ```
 
-## Documentation
+## 📌 Notes
+The project is currently in active development.
 
-For detailed documentation, please visit [documentation link].
+✅ Basic public endpoints are implemented and tested.
 
-## Contributing
+🔜 Private account APIs and WebSocket streaming APIs are planned for upcoming versions.
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+Check the GitHub Repo for updates and contributions. 

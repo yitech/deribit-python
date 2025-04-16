@@ -27,9 +27,9 @@ class DeribitMethod(StrEnum):
     GET_DELIVERY_PRICES = "public/get_delivery_prices"
     GET_EXPIRATIONS = "public/get_expirations"
     GET_FUNDING_CHART_DATA = "public/get_funding_chart_data"
+    GET_FUNDING_RATE_HISTORY = "public/get_funding_rate_history"
 
-
-    GET_INSTRUMENT_INFO = "public/get_instrument_info"
+    # Not implemented yet, AI generated, might not be accurate
     GET_INSTRUMENT_EXCHANGE_RATE = "public/get_instrument_exchange_rate"
     GET_TIME = "public/get_time"
     GET_LAST_TRADES = "public/get_last_trades"

@@ -776,3 +776,45 @@ class FundingChartData:
             "data": [point.to_dict() for point in self.data],
             "interest_8h": self.interest_8h
         }
+    
+
+@dataclass
+class FundingHistory:
+    """
+    Represents a historical funding rate entry.
+
+    Attributes:
+        timestamp: Unix timestamp in milliseconds
+        index_price: The index price at the given timestamp
+        interest_8h: The 8-hour interest/funding rate
+        interest_1h: The 1-hour interest/funding rate
+        prev_index_price: The index price from the previous interval
+    """
+    timestamp: int
+    index_price: float
+    interest_8h: float
+    interest_1h: float
+    prev_index_price: float
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'FundingHistory':
+        return cls(
+            timestamp=data['timestamp'],
+            index_price=data['index_price'],
+            interest_8h=data['interest_8h'],
+            interest_1h=data['interest_1h'],
+            prev_index_price=data['prev_index_price']
+        )
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            'timestamp': self.timestamp,
+            'index_price': self.index_price,
+            'interest_8h': self.interest_8h,
+            'interest_1h': self.interest_1h,
+            'prev_index_price': self.prev_index_price
+        }
+
+    @property
+    def datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.timestamp / 1000)
