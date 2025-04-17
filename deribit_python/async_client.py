@@ -141,7 +141,7 @@ class DeribitAsyncClient:
         Raises:
             DeribitAPIException: If the API request fails
         """
-        result = self._make_request(
+        result = await self._make_request(
             DeribitMethod.GET_ORDER_BOOK,
             {
                 "instrument_name": instrument_name,
@@ -167,7 +167,7 @@ class DeribitAsyncClient:
         params = {"currency": currency}
         if kind is not None:
             params["kind"] = kind
-        result = self._make_request(
+        result = await self._make_request(
             DeribitMethod.GET_BOOK_SUMMARY_BY_CURRENCY,
             params
         )
@@ -186,7 +186,7 @@ class DeribitAsyncClient:
         Raises:
             DeribitAPIException: If the API request fails
         """
-        result = self._make_request(
+        result = await self._make_request(
             DeribitMethod.GET_BOOK_SUMMARY_BY_INSTRUMENT,
             {
                 "instrument_name": instrument_name
@@ -207,7 +207,7 @@ class DeribitAsyncClient:
         Raises:
             DeribitAPIException: If the API request fails
         """
-        result = self._make_request(
+        result = await self._make_request(
             DeribitMethod.GET_CONTRACT_SIZE,
             {
                 "instrument_name": instrument_name
@@ -225,7 +225,7 @@ class DeribitAsyncClient:
         Raises:
             DeribitAPIException: If the API request fails
         """
-        result = self._make_request(
+        result = await self._make_request(
             DeribitMethod.GET_CURRENCIES,
             {}
         )
@@ -251,7 +251,7 @@ class DeribitAsyncClient:
             params["offset"] = offset
         if count is not None:
             params["count"] = count
-        result = self._make_request(
+        result = await self._make_request(
             DeribitMethod.GET_DELIVERY_PRICES,
             params
         )
@@ -275,7 +275,7 @@ class DeribitAsyncClient:
             "currency": currency,
             "kind": kind
         }
-        result = self._make_request(
+        result = await self._make_request(
             DeribitMethod.GET_EXPIRATIONS,
             params
         )
@@ -300,7 +300,7 @@ class DeribitAsyncClient:
             "instrument_name": instrument_name,
             "length": length
         }
-        result = self._make_request(
+        result = await self._make_request(
             DeribitMethod.GET_FUNDING_CHART_DATA,
             params
         )
@@ -326,7 +326,7 @@ class DeribitAsyncClient:
             "start_timestamp": start_timestamp,
             "end_timestamp": end_timestamp
         }
-        result = self._make_request(
+        result = await self._make_request(
             DeribitMethod.GET_FUNDING_RATE_HISTORY,
             params
         )
